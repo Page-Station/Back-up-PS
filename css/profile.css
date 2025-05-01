@@ -1,0 +1,41 @@
+@media only screen and (max-width: 600px) {
+}
+
+body{
+    background-color: rgb(253, 253, 253);
+    user-select: none;
+    overflow: hidden;
+}
+
+.container{
+    background-color: #1B6DB2;
+    padding: 1rem;
+    width: 50%;
+    height: 40rem;
+    margin-top: 2rem;
+    margin-left: 40rem;
+    box-shadow: 5px 10px #888888;
+    border-radius: 5%;
+}
+
+.container h1{
+    text-align: center;
+    color: white;
+}
+
+.container p{
+    color: white;
+    font-size: 25px;
+}
+
+.btn {
+    background-color: rgb(255, 255, 255);
+    text-decoration: none;
+    color: #1B6DB2;
+    padding: 0.5rem;
+    border-radius: 5%;
+}
+
+.logo{
+    width: 10%;
+}
