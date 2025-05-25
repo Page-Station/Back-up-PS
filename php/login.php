@@ -2,20 +2,19 @@
 include 'database.php';
 session_start();
 
-
 if (isset($_SESSION['user'])) {
     header("Location: ../index.php");
     exit();
 }
 
 $error = '';
+$showRegister = false; // Flag untuk tetap di register panel
 
 // Proses Login
 if (isset($_POST['login'])) {
     $login_input = $_POST['login_input'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // Admin login
     if ($login_input === 'admin@gmail.com' && $password === 'admin-pagestation') {
         $_SESSION['user'] = [
             'username' => 'Admin',
@@ -51,7 +50,6 @@ if (isset($_POST['register'])) {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // Cek apakah username sudah dipakai
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $name);
     $stmt->execute();
@@ -59,6 +57,7 @@ if (isset($_POST['register'])) {
 
     if ($result->num_rows > 0) {
         $error = "Username sudah digunakan. Silakan pilih yang lain.";
+        $showRegister = true;
     } else {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
@@ -68,6 +67,7 @@ if (isset($_POST['register'])) {
             exit();
         } else {
             $error = "Gagal mendaftar. Coba lagi.";
+            $showRegister = true;
         }
     }
 }
@@ -81,17 +81,13 @@ if (isset($_POST['register'])) {
     <title>Login & Register</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../css/login.css">
-    <style>
-       
-    </style>
 </head>
 <body>
-<div class="container" id="container">
+<div class="container<?= $showRegister ? ' active' : '' ?>" id="container">
     <!-- Form Registrasi -->
     <div class="form-container sign-up">
         <form method="POST">
             <h1>Buat akun</h1>
-            
             <input type="text" name="name" placeholder="Name" required value="<?= $_POST['name'] ?? '' ?>">
             <input type="email" name="email" placeholder="Email" required value="<?= $_POST['email'] ?? '' ?>">
             <div class="password-container">
@@ -109,7 +105,6 @@ if (isset($_POST['register'])) {
     <div class="form-container sign-in">
         <form method="POST">
             <h1>Masuk Akun</h1>
-           
             <input type="text" name="login_input" placeholder="Email atau Username" required>
             <div class="password-container">
                 <input type="password" id="login-password" name="password" placeholder="Password" required>
@@ -142,13 +137,13 @@ if (isset($_POST['register'])) {
 
 <script src="../js/login.js"></script>
 <script>
-    function togglePassword(id, icon) {
-        const input = document.getElementById(id);
-        const isPassword = input.type === 'password';
-        input.type = isPassword ? 'text' : 'password';
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    }
+function togglePassword(id, icon) {
+    const input = document.getElementById(id);
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
 </script>
 </body>
 </html>

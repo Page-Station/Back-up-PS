@@ -42,7 +42,7 @@ $count_users = $result_count_users->fetch_assoc()['total'];
         <li><a href="data-buku.php">Data Buku</a></li>
         <li><a href="data-pengguna.php">Data Pengguna</a></li>
         <li><a href="data-pengguna.php">Data Peminjaman</a></li>
-        <li><a href="logout.php">Logout</a></li>
+        <li><a href="../logout.php">Logout</a></li>
     </ul>
 </div>
 <div class="container">

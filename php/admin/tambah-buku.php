@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category = $_POST['category'];
     $jenjang = $_POST['jenjang'];  // Mendapatkan nilai jenjang
     $kelas = $_POST['kelas'];      // Mendapatkan nilai kelas
-    $stock = intval($_POST['stock']); // Mendapatkan nilai stok buku
+    $stock = intval($_POST['stock']); // Mendapatkan nilai stok bukuver
 
     $pdf_path = null;
     if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == 0) {

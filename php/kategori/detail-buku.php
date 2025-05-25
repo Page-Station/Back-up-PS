@@ -40,7 +40,7 @@ $book = $result->fetch_assoc();
         <!-- Cover -->
         <div class="detail-cover">
             <?php if (!empty($book['cover_image'])): ?>
-                <img src="../<?php echo $book['cover_image']; ?>" alt="Cover Buku">
+              <img src="../admin/uploads/covers/<?php echo $book['cover_image']; ?>">
             <?php else: ?>
                 <div style="width:250px; height:350px; background:#eee; display:flex; align-items:center; justify-content:center;">Tidak ada cover</div>
             <?php endif; ?>

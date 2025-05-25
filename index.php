@@ -45,11 +45,10 @@ if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
     <div class="sidebar">
         <img src="image/pagestationblue.png" alt="Logo">
         <ul>
-            <li><a href="#"><i class="fas fa-qrcode"></i>Home</a></li>
-            <li><a href="#"><i class="far fa-question-circle"></i>About us</a></li>
-            <li><a href="#"><i class="far fa-envelope"></i>Contact us</a></li>
-            <li><a href="#"><i class="fas fa-calendar-week"></i>Rak pinjam</a></li>
-        </ul>
+            <li><a href="index.php"><i class="fas fa-qrcode"></i>Home</a></li>
+            <li><a href="html/learn-more.html"><i class="far fa-question-circle"></i>About us</a></li>
+            <li><a href="html/learn-more.html"><i class="far fa-envelope"></i>Contact us</a></li>
+            <li><a href="../rak-pinjam.php"><i class="fas fa-calendar-week"></i>Rak pinjam</a></li>
     </div>
 
     <!-- Main Content -->

@@ -39,12 +39,12 @@ $result_books = $conn->query($query_books);
         <i class="fas fa-times" id="cancel"></i>
     </label>
     <div class="sidebar">
-        <img src="image/pagestationblue.png" alt="Logo">
+        <img src="../../image/pagestationblue.png" alt="Logo">
         <ul>
-            <li><a href="#"><i class="fas fa-qrcode"></i>Home</a></li>
-            <li><a href="#"><i class="far fa-question-circle"></i>About us</a></li>
-            <li><a href="#"><i class="far fa-envelope"></i>Contact us</a></li>
-            <li><a href="#"><i class="fas fa-calendar-week"></i>Rak pinjam</a></li>
+            <li><a href="../../index.php"><i class="fas fa-qrcode"></i>Home</a></li>
+            <li><a href="../../learn-more.html"><i class="far fa-question-circle"></i>About us</a></li>
+            <li><a href="../../learn-more.html"><i class="far fa-envelope"></i>Contact us</a></li>
+            <li><a href="../rak-pinjam.php"><i class="fas fa-calendar-week"></i>Rak pinjam</a></li>
         </ul>
     </div>
 
@@ -67,7 +67,7 @@ $result_books = $conn->query($query_books);
             <div class="book-item">
                 <a href="detail-buku.php?id=<?php echo $book['id']; ?>">
                     <?php if (!empty($book['cover_image'])): ?>
-                        <img src="../<?php echo $book['cover_image']; ?>" alt="Cover Buku" class="book-cover">
+                       <img src="../../admin/uploads/cover/<?php echo $book['cover_image']; ?>" alt="book-cover" class="book-cover">
                     <?php else: ?>
                         <div class="book-cover">Tidak ada cover</div>
                     <?php endif; ?>
