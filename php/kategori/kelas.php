@@ -72,7 +72,7 @@ $result_books = $stmt->get_result();
                     <?php while ($book = $result_books->fetch_assoc()): ?>
                         <a href="detail-buku.php?id=<?php echo $book['id']; ?>" class="book-item">
                             <?php if (!empty($book['cover_image'])): ?>
-                                <img src="../<?php echo $book['cover_image']; ?>" alt="Cover Buku" class="book-cover">
+                               <img src="../admin/uploads/covers/<?php echo $book['cover_image']; ?>" class="book-cover">
                             <?php else: ?>
                                 <div class="book-cover" style="background-color:#eee; display:flex; align-items:center; justify-content:center;">Tidak ada cover</div>
                             <?php endif; ?>

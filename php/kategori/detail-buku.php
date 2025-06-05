@@ -2,59 +2,69 @@
 session_start();
 include('../database.php');
 
-// Cek ID buku
 if (!isset($_GET['id'])) {
-    header('Location: pelajaran.php');
-    exit();
+    echo "ID buku tidak ditemukan.";
+    exit;
 }
 
-$id = intval($_GET['id']);
-$query = "SELECT * FROM books WHERE id = $id";
-$result = $conn->query($query);
+$book_id = intval($_GET['id']);
+$query = $conn->prepare("SELECT * FROM books WHERE id = ?");
+$query->bind_param("i", $book_id);
+$query->execute();
+$result = $query->get_result();
 
 if ($result->num_rows == 0) {
     echo "Buku tidak ditemukan.";
-    exit();
+    exit;
 }
 
 $book = $result->fetch_assoc();
+$user_logged_in = isset($_SESSION['user']);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Buku - <?php echo htmlspecialchars($book['title']); ?></title>
+    <title>Detail Buku - <?= htmlspecialchars($book['title']) ?></title>
     <link rel="stylesheet" href="../../css/detail-buku.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-       
-    </style>
 </head>
 <body>
 
-    <a href="self-defelopment.php" class="back-btn">← Kembali</a>
+<a href="javascript:history.back()" class="back-btn">← Kembali</a>
 
-    <div class="detail-container">
-        <!-- Cover -->
-        <div class="detail-cover">
-            <?php if (!empty($book['cover_image'])): ?>
-              <img src="../admin/uploads/covers/<?php echo $book['cover_image']; ?>">
-            <?php else: ?>
-                <div style="width:250px; height:350px; background:#eee; display:flex; align-items:center; justify-content:center;">Tidak ada cover</div>
-            <?php endif; ?>
-        </div>
-
-        <!-- Info Buku -->
-        <div class="detail-info">
-            <h1><?php echo htmlspecialchars($book['title']); ?></h1>
-            <p><strong>Penulis:</strong> <?php echo htmlspecialchars($book['author']); ?></p>
-            <p><strong>Deskripsi:</strong> <?php echo nl2br(htmlspecialchars($book['description'])); ?></p>
-            <p><strong>Diterbitkan:</strong> <?php echo htmlspecialchars($book['published_date'] ?? 'Tidak diketahui'); ?></p>
-            <a href="../<?php echo $book['pdf_path']; ?>" target="_blank" class="btn read-btn">Baca Buku</a>
-        </div>
+<div class="detail-container">
+    <!-- Cover Buku -->
+    <div class="detail-cover">
+        <?php if (!empty($book['cover_image'])): ?>
+            <img src="../admin/uploads/covers/<?= htmlspecialchars($book['cover_image']) ?>" alt="Cover Buku">
+        <?php else: ?>
+            <div style="width:250px; height:350px; background:#eee; display:flex; align-items:center; justify-content:center;">Tidak ada cover</div>
+        <?php endif; ?>
     </div>
+
+    <!-- Informasi Buku -->
+    <div class="detail-info">
+        <h1><?= htmlspecialchars($book['title']) ?></h1>
+        <p><strong>Penulis:</strong> <?= htmlspecialchars($book['author']) ?></p>
+        <p><strong>Deskripsi:</strong><br><?= nl2br(htmlspecialchars($book['description'])) ?></p>
+        <p><strong>Kategori:</strong> <?= htmlspecialchars($book['category']) ?></p>
+        <?php if (!empty($book['sub_category'])): ?>
+            <p><strong>Sub Kategori:</strong> <?= htmlspecialchars($book['sub_category']) ?></p>
+        <?php endif; ?>
+        <p><strong>Stok Tersedia:</strong> <?= intval($book['stock']) ?> buku</p>
+
+        <?php if ($user_logged_in): ?>
+            <?php if ($book['stock'] > 0): ?>
+                <a href="pinjam-buku.php?book_id=<?= $book['id'] ?>" class="btn read-btn">Pinjam & Baca Buku</a>
+            <?php else: ?>
+                <p style="color: red;"><strong>Stok habis. Tidak dapat dipinjam saat ini.</strong></p>
+            <?php endif; ?>
+        <?php else: ?>
+            <p><a href="../php/login.php" class="btn">Login untuk membaca</a></p>
+        <?php endif; ?>
+    </div>
+</div>
 
 </body>
 </html>

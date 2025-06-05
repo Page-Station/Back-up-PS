@@ -25,13 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $author = $_POST['author'];
     $description = $_POST['description'];
     $category = $_POST['category'];
-    $jenjang = $_POST['jenjang'] ?? null;  // Ambil jenjang jika ada
-    $kelas = $_POST['kelas'];      // Ambil kelas jika ada
-    if ($kelas === '' || !is_numeric($kelas)) {
-        $kelas = null; // atau 0 jika kamu ingin default 0
-    } else {
-        $kelas = intval($kelas);
-    }
+    $sub_category = $_POST['sub_category'] ?? null;
+    $jenjang = $_POST['jenjang'] ?? null;
+    $kelas = $_POST['kelas'];
+    $kelas = ($kelas === '' || !is_numeric($kelas)) ? null : intval($kelas);
     $stock = intval($_POST['stock']);
 
     $pdf_path = $_POST['existing_pdf'];
@@ -42,12 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $cover_path = $_POST['existing_cover'];
     if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] == 0) {
-        $cover_path = 'uploads/covers/' . basename($_FILES['cover_image']['name']);
-        move_uploaded_file($_FILES['cover_image']['tmp_name'], $cover_path);
+        $cover_filename = basename($_FILES['cover_image']['name']);
+        move_uploaded_file($_FILES['cover_image']['tmp_name'], 'uploads/covers/' . $cover_filename);
+        $cover_path = $cover_filename;
     }
 
-    $stmt = $conn->prepare("UPDATE books SET title=?, author=?, description=?, pdf_path=?, category=?, cover_image=?, jenjang=?, kelas=?, stock=? WHERE id=?");
-    $stmt->bind_param('ssssssssii', $title, $author, $description, $pdf_path, $category, $cover_path, $jenjang, $kelas, $stock, $book_id);
+    $stmt = $conn->prepare("UPDATE books SET title=?, author=?, description=?, pdf_path=?, category=?, sub_category=?, cover_image=?, jenjang=?, kelas=?, stock=? WHERE id=?");
+    $stmt->bind_param('ssssssssiii', $title, $author, $description, $pdf_path, $category, $sub_category, $cover_path, $jenjang, $kelas, $stock, $book_id);
     $stmt->execute();
 
     header("Location: data-buku.php");
@@ -56,18 +54,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <title>Edit Buku</title>
     <link rel="stylesheet" href="../../css/kelola-buku.css">
 </head>
 <body>
+
 <h2>Edit Buku</h2>
 <form action="edit-buku.php?id=<?php echo $book['id']; ?>" method="POST" enctype="multipart/form-data">
     <input type="text" name="title" value="<?php echo htmlspecialchars($book['title']); ?>" required>
     <input type="text" name="author" value="<?php echo htmlspecialchars($book['author']); ?>">
     <textarea name="description" required><?php echo htmlspecialchars($book['description']); ?></textarea>
+
     <select name="category" id="category" required>
         <?php
         $categories = ["Pelajaran", "Novel", "Filsafat", "Psikologi", "Dongeng", "Islami", "Self Development"];
@@ -78,6 +78,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ?>
     </select>
 
+    <!-- Subkategori -->
+    <div id="subkategori-fields" style="display:none;">
+        <label>Sub-Kategori</label>
+        <select name="sub_category" id="sub_category">
+            <option value="">Pilih Sub-Kategori</option>
+        </select>
+    </div>
+
+    <!-- Pelajaran -->
     <div id="pelajaran-fields" style="display: <?php echo ($book['category'] == 'Pelajaran') ? 'block' : 'none'; ?>;">
         <select name="jenjang" id="jenjang">
             <option value="">Pilih Jenjang</option>
@@ -93,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <select name="kelas" id="kelas">
             <option value="">Pilih Kelas</option>
             <?php
-            // Tentukan kelas sesuai jenjang yang sudah dipilih
             $kelas_options = [];
             if ($book['jenjang'] == 'SD') {
                 $kelas_options = range(1, 6);
@@ -117,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <p>Cover Saat Ini:
         <?php if ($book['cover_image']): ?>
-            <img src="<?php echo $book['cover_image']; ?>" style="width:80px;">
+            <img src="uploads/covers/<?php echo $book['cover_image']; ?>" style="width:80px;">
         <?php else: ?>
             Tidak ada
         <?php endif; ?>
@@ -131,12 +139,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 <script>
-document.getElementById('category').addEventListener('change', function() {
+const categorySelect = document.getElementById('category');
+const subCategoryDiv = document.getElementById('subkategori-fields');
+const subCategorySelect = document.getElementById('sub_category');
+
+const subCategoryMap = {
+    'Novel': ['Romance', 'Horror', 'Comedy', 'Fantasy', 'Mystery'],
+    'Filsafat': ['Filsafat Agama', 'Filsafat Ilmu'],
+    'Psikologi': ['Psikologi Sosial', 'Psikologi Agama'],
+    'Islami': ['Kisah Nabi', 'Fiqih']
+};
+
+function updateSubCategoryOptions(selectedCat, currentValue) {
+    const options = subCategoryMap[selectedCat] || [];
+    subCategorySelect.innerHTML = '<option value="">Pilih Sub-Kategori</option>';
+    options.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        if (sub === currentValue) opt.selected = true;
+        subCategorySelect.appendChild(opt);
+    });
+    subCategoryDiv.style.display = options.length > 0 ? 'block' : 'none';
+}
+
+categorySelect.addEventListener('change', function() {
+    const selected = this.value;
+    updateSubCategoryOptions(selected, null);
+
     const pelajaranFields = document.getElementById('pelajaran-fields');
-    pelajaranFields.style.display = this.value === 'Pelajaran' ? 'block' : 'none';
+    pelajaranFields.style.display = selected === 'Pelajaran' ? 'block' : 'none';
 });
 
-document.getElementById('jenjang').addEventListener('change', function() {
+window.addEventListener('DOMContentLoaded', function () {
+    updateSubCategoryOptions('<?php echo $book['category']; ?>', '<?php echo $book['sub_category']; ?>');
+});
+
+document.getElementById('jenjang').addEventListener('change', function () {
     const jenjang = this.value;
     const kelas = document.getElementById('kelas');
     kelas.innerHTML = '<option value="">Pilih Kelas</option>';
@@ -150,5 +189,6 @@ document.getElementById('jenjang').addEventListener('change', function() {
     }
 });
 </script>
+
 </body>
 </html>

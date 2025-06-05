@@ -12,9 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $author = $_POST['author'];
     $description = $_POST['description'];
     $category = $_POST['category'];
-    $jenjang = $_POST['jenjang'];  // Mendapatkan nilai jenjang
-    $kelas = $_POST['kelas'];      // Mendapatkan nilai kelas
-    $stock = intval($_POST['stock']); // Mendapatkan nilai stok bukuver
+    $sub_category = $_POST['sub_category'] ?? null;
+    $jenjang = $_POST['jenjang'] ?? null;
+    $kelas = $_POST['kelas'] ?? null;
+    $stock = intval($_POST['stock']);
 
     $pdf_path = null;
     if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == 0) {
@@ -27,13 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cover_path = null;
     if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] == 0) {
         $cover_filename = basename($_FILES['cover_image']['name']);
-        $cover_path = 'uploads/covers/' . $cover_filename;
         if (!is_dir('uploads/covers')) mkdir('uploads/covers', 0777, true);
-        move_uploaded_file($_FILES['cover_image']['tmp_name'], $cover_path);
+        move_uploaded_file($_FILES['cover_image']['tmp_name'], 'uploads/covers/' . $cover_filename);
+        $cover_path = $cover_filename;
     }
 
-    $stmt = $conn->prepare("INSERT INTO books (title, author, description, pdf_path, category, cover_image, jenjang, kelas, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param('sssssssii', $title, $author, $description, $pdf_path, $category, $cover_path, $jenjang, $kelas, $stock);
+    $stmt = $conn->prepare("INSERT INTO books (title, author, description, pdf_path, category, sub_category, cover_image, jenjang, kelas, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param('sssssssssi', $title, $author, $description, $pdf_path, $category, $sub_category, $cover_path, $jenjang, $kelas, $stock);
     $stmt->execute();
 
     header("Location: data-buku.php");
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <title>Tambah Buku</title>
@@ -51,10 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <form action="tambah-buku.php" method="POST" enctype="multipart/form-data">
-<h2>Tambah Buku</h2>
+    <h2>Tambah Buku</h2>
     <input type="text" name="title" placeholder="Judul Buku" required>
     <input type="text" name="author" placeholder="Penulis">
     <textarea name="description" placeholder="Deskripsi" required></textarea>
+
     <select name="category" id="category" required>
         <option value="">Pilih Kategori</option>
         <option value="Pelajaran">Pelajaran</option>
@@ -66,6 +68,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <option value="Self Development">Self Development</option>
     </select>
 
+    <!-- Sub-Kategori -->
+    <div id="subkategori-fields" style="display:none;">
+        <label>Sub-Kategori</label>
+        <select name="sub_category" id="sub_category">
+            <option value="">Pilih Sub-Kategori</option>
+        </select>
+    </div>
+
+    <!-- Jenjang & Kelas (Pelajaran) -->
     <div id="pelajaran-fields" style="display:none;">
         <select name="jenjang" id="jenjang">
             <option value="">Pilih Jenjang</option>
@@ -79,34 +90,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </select>
     </div>
 
-    <script>
-    document.getElementById('category').addEventListener('change', function() {
-        document.getElementById('pelajaran-fields').style.display = this.value === 'Pelajaran' ? 'block' : 'none';
-    });
-
-    document.getElementById('jenjang').addEventListener('change', function() {
-        const jenjang = this.value;
-        const kelas = document.getElementById('kelas');
-        kelas.innerHTML = '<option value="">Pilih Kelas</option>';
-        let jumlah = jenjang === 'SD' ? 6 : (jenjang === 'SMP' ? 3 : 3);
-        let start = jenjang === 'SD' ? 1 : (jenjang === 'SMP' ? 7 : 10);
-        for (let i = 0; i < jumlah; i++) {
-            const option = document.createElement('option');
-            option.value = start + i;
-            option.textContent = 'Kelas ' + (start + i);
-            kelas.appendChild(option);
-        }
-    });
-    </script>
-
     <input type="number" name="stock" placeholder="Stok Buku" min="0" required>
 
     <p>Upload PDF</p>
     <input type="file" name="pdf_file" accept=".pdf">
+
     <p>Upload Cover</p>
     <input type="file" name="cover_image" accept="image/*">
 
     <button type="submit">Tambah</button>
 </form>
+
+<script>
+// Mapping sub-kategori
+const subCategoryMap = {
+    'Novel': ['Romance', 'Horror', 'Comedy', 'Fantasy', 'Mystery'],
+    'Filsafat': ['Filsafat Agama', 'Filsafat Ilmu'],
+    'Psikologi': ['Psikologi Sosial', 'Psikologi Agama'],
+    'Islami': ['Kisah Nabi', 'Fiqih']
+};
+
+const categorySelect = document.getElementById('category');
+const subCategoryDiv = document.getElementById('subkategori-fields');
+const subCategorySelect = document.getElementById('sub_category');
+const pelajaranFields = document.getElementById('pelajaran-fields');
+
+categorySelect.addEventListener('change', function () {
+    const selected = this.value;
+
+    // Subkategori
+    const options = subCategoryMap[selected] || [];
+    subCategorySelect.innerHTML = '<option value="">Pilih Sub-Kategori</option>';
+    options.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        subCategorySelect.appendChild(opt);
+    });
+    subCategoryDiv.style.display = options.length > 0 ? 'block' : 'none';
+
+    // Jenjang
+    pelajaranFields.style.display = selected === 'Pelajaran' ? 'block' : 'none';
+});
+
+// Kelas berdasarkan jenjang
+document.getElementById('jenjang').addEventListener('change', function () {
+    const jenjang = this.value;
+    const kelas = document.getElementById('kelas');
+    kelas.innerHTML = '<option value="">Pilih Kelas</option>';
+    let jumlah = jenjang === 'SD' ? 6 : (jenjang === 'SMP' ? 3 : 3);
+    let start = jenjang === 'SD' ? 1 : (jenjang === 'SMP' ? 7 : 10);
+    for (let i = 0; i < jumlah; i++) {
+        const option = document.createElement('option');
+        option.value = start + i;
+        option.textContent = 'Kelas ' + (start + i);
+        kelas.appendChild(option);
+    }
+});
+</script>
+
 </body>
 </html>

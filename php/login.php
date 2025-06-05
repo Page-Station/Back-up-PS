@@ -24,7 +24,7 @@ if (isset($_POST['login'])) {
         header("Location: admin/admin.php");
         exit();
     } else {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? OR username = ?");
+        $stmt = $conn->prepare("SELECT id, username, email, password FROM users WHERE email = ? OR username = ?");
         $stmt->bind_param("ss", $login_input, $login_input);
         $stmt->execute();
         $result = $stmt->get_result();

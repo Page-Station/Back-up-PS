@@ -18,7 +18,7 @@ $result_users = $conn->query($query_users);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data pengguna</title>
-    <link rel="stylesheet" type="text/css" href="../css/../kelola-buku&pengguna.css">
+    <link rel="stylesheet" type="text/css" href="../../css/kelola-buku&pengguna.css">
 </head>
 <body>
 <section class="users-section">

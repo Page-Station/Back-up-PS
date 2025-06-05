@@ -17,20 +17,12 @@ $result_books = $conn->query($query_books);
     <meta charset="UTF-8">
     <title>Daftar Buku</title>
     <link rel="stylesheet" type="text/css" href="../../css/kelola-buku&pengguna.css">
-    <style>
-        img.cover-preview {
-            width: 80px;
-            height: 120px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-        }
-    </style>
 </head>
 <body>
 
 <section class="books-section">
-    <h2>Daftar Buku</h2>
-    <a href="tambah-buku.php">+ Tambah Buku</a>
+    <h2 class="judul">Daftar Buku</h2>
+    <a href="tambah-buku.php" class="btn-tambah">+ Tambah Buku</a>
     <table>
         <tr>
             <th>Cover</th>
@@ -46,7 +38,7 @@ $result_books = $conn->query($query_books);
         <tr>
             <td>
                 <?php if ($book['cover_image']): ?>
-                    <img src="<?php echo $book['cover_image']; ?>" class="cover-preview">
+                    <img src="../admin/uploads/covers/<?php echo $book['cover_image']; ?>" class="cover-preview">
                 <?php else: ?>
                     Tidak ada
                 <?php endif; ?>
@@ -55,16 +47,18 @@ $result_books = $conn->query($query_books);
             <td><?php echo $book['author']; ?></td>
             <td><?php echo substr($book['description'], 0, 100) . '...'; ?></td>
             <td><?php echo $book['category']; ?></td>
+            
             <td>
                 <?php if ($book['pdf_path']): ?>
-                    <a href="<?php echo $book['pdf_path']; ?>" target="_blank">Baca PDF</a>
+                    <a href="<?php echo $book['pdf_path']; ?>" target="_blank" class="a">Baca PDF</a>
                 <?php else: ?>
                     Tidak ada
                 <?php endif; ?>
             </td>
+            <td><?php echo $book['stock']; ?></td>
             <td>
-                <a href="edit-buku.php?id=<?php echo $book['id']; ?>">Edit</a> |
-                <a href="hapus-buku.php?id=<?php echo $book['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                <a class="a" href="edit-buku.php?id=<?php echo $book['id']; ?>">Edit</a> |
+                <a class="a" href="hapus-buku.php?id=<?php echo $book['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
             </td>
         </tr>
         <?php endwhile; ?>

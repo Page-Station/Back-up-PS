@@ -76,3 +76,26 @@ th {
         font-size: 14px; /* Ukuran font tombol lebih kecil */
     }
 }
+
+.a{
+    font-size: 1em;
+    text-decoration: none;
+    color: #1B6DB2;
+}
+
+.btn-tambah{
+    text-decoration: none;
+    color: #1B6DB2;
+}
+
+.judul{
+    font-size: 3em;
+    text-align: center;
+}
+
+ img.cover-preview {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }

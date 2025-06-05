@@ -31,7 +31,6 @@ $books = mysqli_fetch_assoc($result);
         <h1><?= htmlspecialchars($books['title']) ?></h1>
         <p><strong>Penulis:</strong> <?= htmlspecialchars($books['author']) ?></p>
         <p><strong>Deskripsi:</strong><br><?= nl2br(htmlspecialchars($books['description'])) ?></p>
-
         <?php if (!empty($books['cover_image'])): ?>
             <img src="uploads/<?= htmlspecialchars($books['cover_image']) ?>" alt="Cover Buku" style="max-width:200px;">
         <?php endif; ?>

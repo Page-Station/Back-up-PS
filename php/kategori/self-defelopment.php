@@ -67,7 +67,7 @@ $result_books = $conn->query($query_books);
             <div class="book-item">
                 <a href="detail-buku.php?id=<?php echo $book['id']; ?>">
                     <?php if (!empty($book['cover_image'])): ?>
-                       <img src="../../admin/uploads/cover/<?php echo $book['cover_image']; ?>" alt="book-cover" class="book-cover">
+                      <img src="../admin/uploads/covers/<?php echo $book['cover_image']; ?>" alt="book-cover" class="book-cover">
                     <?php else: ?>
                         <div class="book-cover">Tidak ada cover</div>
                     <?php endif; ?>
