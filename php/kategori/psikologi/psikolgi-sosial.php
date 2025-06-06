@@ -5,19 +5,19 @@ include('../../database.php');
 // Tambahan: fitur search
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Sub-kategori yang ingin ditampilkan
-$sub_category = 'Romance';
+// Nama subkategori yang ingin ditampilkan di halaman ini
+$sub_category = 'Psikologi Sosial';
 
-// Tambahan: Query pencarian jika ada search
+// Tambahan: query pencarian jika ada search
 if (!empty($search)) {
-    $stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Novel' AND sub_category = ? AND title LIKE ?");
+    $stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Psikologi' AND sub_category = ? AND title LIKE ?");
     $search_param = '%' . $search . '%';
     $stmt->bind_param("ss", $sub_category, $search_param);
     $stmt->execute();
     $result_books = $stmt->get_result();
 } else {
-    // Query default tanpa pencarian
-    $stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Novel' AND sub_category = ?");
+    // Default: tampilkan semua buku subkategori ini
+    $stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Psikologi' AND sub_category = ?");
     $stmt->bind_param("s", $sub_category);
     $stmt->execute();
     $result_books = $stmt->get_result();
@@ -28,7 +28,7 @@ if (!empty($search)) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Novel - <?php echo $sub_category; ?> | Page Station</title>
+    <title>Psikologi - <?php echo $sub_category; ?> | Page Station</title>
     <link rel="stylesheet" href="../../../css/kategori.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script defer>
@@ -68,17 +68,17 @@ if (!empty($search)) {
 
 <!-- Main Content -->
 <section class="content">
-    <!-- Tambahan: Form search -->
     <div class="search-bar">
-        <form method="GET" action="romance.php">
-            <input type="text" name="search" placeholder="Cari Buku Novel Romance..." value="<?php echo htmlspecialchars($search); ?>">
+        <!-- Tambahan: form pencarian -->
+        <form method="GET" action="#">
+            <input type="text" name="search" placeholder="Cari Buku Psikologi Sosial..." value="<?php echo htmlspecialchars($search); ?>">
             <button type="submit"><i class="fas fa-search"></i></button>
         </form>
     </div>
 
     <div class="white-boxes">
         <div class="kategori">
-            <h3>Novel - <?php echo $sub_category; ?></h3>
+            <h3>Psikologi - <?php echo $sub_category; ?></h3>
             <div class="book-grid">
                 <?php if ($result_books->num_rows > 0): ?>
                     <?php while ($book = $result_books->fetch_assoc()): ?>

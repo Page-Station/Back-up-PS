@@ -147,31 +147,45 @@ label #cancel {
     margin-left: 250px;
 }
 
-/* Search Bar */
 .search-bar {
-    margin-left: 3%;
-    width: 88%;
     display: flex;
-    align-items: center;
-    background: #fff;
-    padding: 10px 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+    justify-content: center;
+    margin: 10px 0;
 }
 
-.search-bar input {
+.search-bar form {
+    display: flex;
+    border: 2px solid #007BFF;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #fff;
+    max-width: 1000px;
+    width: 90%;
+    margin-bottom: 0;
+}
+
+.search-bar input[type="text"] {
+    padding: 10px 20px;
     border: none;
     outline: none;
-    flex: 1;
-    padding: 5px;
+    flex-grow: 1;
     font-size: 16px;
 }
 
-.search-bar i {
-    color: #888;
+.search-bar button {
+    background-color: #007BFF;
+    border: none;
+    color: white;
+    padding: 10px 20px;
     cursor: pointer;
+    font-size: 16px;
 }
+
+.search-bar button:hover {
+    background-color: #0056b3;
+}
+/* Search Bar */
+
 
 /* Welcome Banner */
 
@@ -304,7 +318,7 @@ body.dark-mode {
 
 .judul{
     text-decoration: none;
-    color: black;
+    color: #000000;
 }
 
 .book-item {
@@ -401,4 +415,34 @@ body.dark-mode {
 .jenjang-box {
     margin-bottom: 30px;
 }
+
+  .subkategori-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .subkategori-box {
+            
+            width: 180px;
+            height: 120px;
+            border: 2px solid #337ab7;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: white;
+            transition: 0.3s;
+            text-decoration: none;
+            color: black;
+        }
+
+        .subkategori-box:hover {
+            background-color: #e6f0ff;
+            transform: scale(1.05);
+        }
 

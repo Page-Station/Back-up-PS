@@ -2,14 +2,26 @@
 session_start();
 include('../../database.php');
 
-// Nama subkategori yang ingin ditampilkan di halaman ini
+// Tambahan: fitur search
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Sub-kategori yang ingin ditampilkan
 $sub_category = 'Horror';
 
-// Ambil buku dari database yang kategori = Novel dan sub_category = Horror
-$stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Novel' AND sub_category = ?");
-$stmt->bind_param("s", $sub_category);
-$stmt->execute();
-$result_books = $stmt->get_result();
+// Tambahan: Query pencarian jika ada search
+if (!empty($search)) {
+    $stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Novel' AND sub_category = ? AND title LIKE ?");
+    $search_param = '%' . $search . '%';
+    $stmt->bind_param("ss", $sub_category, $search_param);
+    $stmt->execute();
+    $result_books = $stmt->get_result();
+} else {
+    // Query default tanpa pencarian
+    $stmt = $conn->prepare("SELECT * FROM books WHERE category = 'Novel' AND sub_category = ?");
+    $stmt->bind_param("s", $sub_category);
+    $stmt->execute();
+    $result_books = $stmt->get_result();
+}
 ?>
 
 <!DOCTYPE html>
@@ -56,9 +68,12 @@ $result_books = $stmt->get_result();
 
 <!-- Main Content -->
 <section class="content">
+    <!-- Tambahan: Form search -->
     <div class="search-bar">
-        <input type="text" placeholder="Cari novel Horror...">
-        <i class="fas fa-search"></i>
+        <form method="GET" action="horror.php">
+            <input type="text" name="search" placeholder="Cari Buku Novel Horror..." value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
     </div>
 
     <div class="white-boxes">
@@ -76,19 +91,14 @@ $result_books = $stmt->get_result();
                                 <?php endif; ?>
                                 <h4><?php echo htmlspecialchars($book['title']); ?></h4>
                             </a>
-                            <p>Stok: <?php echo $book['stock']; ?></p>
                             <?php if ($book['stock'] > 0): ?>
-                                <form action="../../pinjam-buku.php" method="POST">
-                                    <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
-                                    <button type="submit">Pinjam</button>
-                                </form>
                             <?php else: ?>
                                 <p style="color:red;">Stok habis</p>
                             <?php endif; ?>
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <p>Tidak ada buku Horror tersedia saat ini.</p>
+                    <p>Tidak ada buku <?php echo $sub_category; ?> ditemukan<?php if ($search) echo " untuk '<strong>" . htmlspecialchars($search) . "</strong>'"; ?>.</p>
                 <?php endif; ?>
             </div>
         </div>

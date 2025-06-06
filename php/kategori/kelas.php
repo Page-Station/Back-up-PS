@@ -76,7 +76,7 @@ $result_books = $stmt->get_result();
                             <?php else: ?>
                                 <div class="book-cover" style="background-color:#eee; display:flex; align-items:center; justify-content:center;">Tidak ada cover</div>
                             <?php endif; ?>
-                            <h4><?php echo htmlspecialchars($book['title']); ?></h4>
+                            <h4 class="judul"><?php echo htmlspecialchars($book['title']); ?></h4>
                         </a>
                     <?php endwhile; ?>
                 <?php else: ?>

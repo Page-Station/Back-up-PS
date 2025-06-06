@@ -66,10 +66,6 @@ session_start();
 
 <!-- Main Content -->
 <section class="content">
-    <div class="search-bar">
-        <input type="text" placeholder="Cari subkategori novel...">
-        <i class="fas fa-search"></i>
-    </div>
 
     <div class="white-boxes">
         <div class="kategori">
